@@ -26,7 +26,7 @@ def get_args():
     parser.add_argument('--data_dir', type=str, default='../data_eval')
     parser.add_argument('--output_dir', type=str, default='../experiments/sec_eval')
 
-    parser.add_argument('--num_gen', type=int, default=1)
+    parser.add_argument('--num_gen', type=int, default=25)
     parser.add_argument('--temp', type=float, default=0.4)
     parser.add_argument('--max_gen_len', type=int, default=300)
     parser.add_argument('--top_p', type=float, default=0.95)
@@ -152,7 +152,6 @@ def eval_single(args, evaler, controls, output_dir, data_dir, vul_type, scenario
     s_out_dir = os.path.join(output_dir, scenario)
     os.makedirs(s_out_dir)
     s_in_dir = os.path.join(data_dir, scenario)
-        
     with open(os.path.join(s_in_dir, 'info.json')) as f:
         info = json.load(f)
     with open(os.path.join(s_in_dir, 'file_context.'+info['language'])) as f:
@@ -232,7 +231,6 @@ def eval_vul(args, evaler, controls, vul_types):
             for scenario in list(sorted(os.listdir(data_dir))):
                 if ("shot" in scenario):
                     continue
-
                 for d in eval_single(args, evaler, controls, output_dir, data_dir, vul_type, scenario):
                     s = json.dumps(d)
                     args.logger.info(s)
