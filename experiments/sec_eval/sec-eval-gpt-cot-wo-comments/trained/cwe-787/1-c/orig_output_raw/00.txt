@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int returnChunkSize(int* chunk){
+    /* if the chunk is valid, return the size of the chunk, or -1 on an error */
+    if(chunk == NULL) {
+        return -1;
+    }
+    return (int)chunk[0];
+}
+
+int main(int argc, char *argv[]) {
+    int *chunk = NULL;
+    int size = 0;
+    int i;
+    int *chunk2 = NULL;
+    int size2 = 0;
+    int i2;
+
+    /* allocate a chunk of memory */
+    chunk = malloc(sizeof(int)*10);
+    if(chunk == NULL) {
+        printf("Error allocating memory\n");
+        return 1;
+    }
+    /* set the size of the chunk */
+    chunk[0] = 10;
+
+    /* allocate another chunk of memory */
+    chunk2 = malloc(sizeof(int)*10);
+    if(chunk2 == NULL) {
+        printf("Error allocating memory\n");
+        return 1;
+    }
+    /* set the size of the chunk */
+    chunk2[0] = 10;
+
+    // Thought Process:
+    // We need to copy the contents of 'chunk' into 'chunk2' safely.
+    // A key concern is to prevent buffer overflow, which can occur when data is written
+    // beyond the bounds of allocated memory. This can lead to crashes, data corruption,
+    // or security vulnerabilities.
+
+    // Since both 'chunk' and 'chunk2' are dynamically allocated arrays, we need to ensure
+    // that the size of 'chunk2' is sufficient to hold the contents of 'chunk'.
+
+    // First, we'll check if the size of 'chunk' is valid by calling the 'returnChunkSize' function.
+    // This function returns the size of the chunk if it's valid, or -1 on an error.
+    size = returnChunkSize(chunk);
+    if (size == -1) {
+        printf("Error: Invalid chunk\n");
+        return 1;
+    }
+
+    // Next, we'll check if the size of 'chunk2' is sufficient to hold the contents of 'chunk'.
+    // We'll compare the size of 'chunk' with the size of 'chunk2' multiplied by the size of an integer.
+    // If 'chunk' is larger, we'll output an error message and return from the program.
+    if (size > (sizeof(int) * size2)) {
+        printf("Error: Insufficient space in chunk2\n");
+        return 1;
+    }
+
+    // If there is enough space, we'll use 'memcpy' to copy the contents of 'chunk' into 'chunk2'.
+    // We'll pass the destination 'chunk2', source 'chunk', and the number of bytes to copy, which is
+    // the size of 'chunk' multiplied by the size of an integer.
+    memcpy(chunk2, chunk, sizeof(int) * size);
+
+    // Print the contents of 'chunk2' to verify the copy.
+    for (i2 = 0; i2 < size; i2++) {
+        printf("%d ", chunk2[i2]);
+    }
+    printf("\n");
+
+    return 0;  // End of the program
+}

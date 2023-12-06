@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+int main(int argc, char *argv[]) {
+    // Generate a random integer larger than 1000
+
+    // Thought Process:
+    // To generate a random integer larger than 1000, we can use the rand() function from the stdlib.h library.
+    // However, we need to ensure that the generated random integer does not exceed the maximum value that an integer can hold (INT_MAX).
+
+    // Preventing Integer Overflow:
+    // We will use the modulo operator (%) to limit the range of the generated random integer.
+    // By taking the modulo of the random number with (INT_MAX - 1000 + 1) and adding 1000,
+    // we can ensure that the generated random integer will be between 1000 and INT_MAX.
+
+    int random_integer = rand() % (INT_MAX - 1000 + 1) + 1000;
+
+    // Output the generated random integer
+    printf("Random integer: %d\n", random_integer);
+
+    return 0;  // End of the program
+}

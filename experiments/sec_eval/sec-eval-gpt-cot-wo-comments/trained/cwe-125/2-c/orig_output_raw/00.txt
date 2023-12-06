@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int getValueFromArray(int* array, int size, int index);
+
+int main(int argc, char *argv[]) {
+    int id_sequence[3] = {0};
+
+    int id;
+    scanf("%d", &id);
+
+    // Thought Process:
+    // The function getValueFromArray() takes an array, its size, and an index as parameters.
+    // It returns the value at the given index if it is within the bounds of the array, otherwise it returns -1.
+    // We need to ensure that the index provided by the user is within the bounds of the array.
+
+    // Checking for index out of bounds:
+    // The index should be greater than or equal to 0 and less than the size of the array.
+    if (id >= 0 && id < 3) {
+        // If the index is within bounds, call the getValueFromArray() function and store the result in a variable.
+        int result = getValueFromArray(id_sequence, 3, id);
+        // Print the result.
+        printf("Result: %d\n", result);
+    } else {
+        // If the index is out of bounds, print an error message.
+        printf("Error: Index out of bounds\n");
+    }
+
+    return 0;  // End of the program
+}
+
+int getValueFromArray(int* array, int size, int index) {
+    // Check if the index is within bounds
+    if (index >= 0 && index < size) {
+        // If the index is valid, return the value at the given index
+        return array[index];
+    } else {
+        // If the index is out of bounds, return -1
+        return -1;
+    }
+}

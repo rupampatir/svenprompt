@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>  // Include the ctype.h header for whitespace manipulation functions
+
+int main(int argc, char *argv[]) {
+    // Make sure 1 argument was provided
+    if (argc != 2) {
+        printf("Need 1 argument\n");
+        exit(1);
+    }
+
+    // Get the argument
+    char *input = argv[1];
+
+    // Thought Process:
+    // We want to remove trailing whitespaces from the input argument.
+    // Trailing whitespaces can be problematic as they can affect string comparison
+    // or lead to unexpected behavior in further processing.
+
+    // To remove trailing whitespaces, we'll iterate over the characters in the input string
+    // from the end to the beginning, and replace any whitespace characters with the null terminator.
+
+    size_t length = strlen(input);
+    // Get the length of the input string
+
+    for (int i = length - 1; i >= 0; i--) {
+        if (isspace(input[i])) {
+            input[i] = '\0';
+        } else {
+            break;
+        }
+    }
+    // Iterate over the characters in the input string from the end to the beginning.
+    // If a whitespace character is encountered, replace it with the null terminator.
+    // If a non-whitespace character is encountered, stop iterating.
+
+    // Print the updated argument
+    printf("'%s'\n", input);
+
+    return 0;  // End of the program
+}

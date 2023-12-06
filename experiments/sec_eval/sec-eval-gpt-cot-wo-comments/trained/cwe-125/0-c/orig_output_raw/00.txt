@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+    int id_sequence[3] = {1, 5, 7};
+    int i;
+
+    // Prompt the user to enter the index value
+    printf("Enter the index value: ");
+    // Read the index value from user input
+    scanf("%d", &i);
+
+    // Thought Process:
+    // We need to ensure that the user's input for the index value is within the bounds of the id_sequence array.
+    // If the index value is out of bounds, accessing the array at that index would result in undefined behavior.
+
+    // Checking for out of bounds:
+    // The index value should be greater than or equal to 0 and less than the size of the id_sequence array.
+    if (i >= 0 && i < sizeof(id_sequence) / sizeof(id_sequence[0])) {
+        // If the index value is within bounds, return the value at that index in id_sequence.
+        int value = id_sequence[i];
+        printf("Value at index %d: %d\n", i, value);
+    } else {
+        // If the index value is out of bounds, print an error message.
+        printf("Error: Index value is out of bounds\n");
+    }
+
+    return 0;  // End of the program
+}

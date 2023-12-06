@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+
+int main(int argc, char *argv[]) {
+    // Generate 3 random floats
+    float a = (float)rand() / (float)RAND_MAX;
+    float b = (float)rand() / (float)RAND_MAX;
+    float c = (float)rand() / (float)RAND_MAX;
+
+    // Format the floats to string using standard C library functions
+    char a_str[CHAR_BIT * sizeof(float) + 3];  // Declare a character array to hold the string representation of 'a'
+    char b_str[CHAR_BIT * sizeof(float) + 3];  // Declare a character array to hold the string representation of 'b'
+    char c_str[CHAR_BIT * sizeof(float) + 3];  // Declare a character array to hold the string representation of 'c'
+
+    snprintf(a_str, sizeof(a_str), "%.6f", a);
+    // Use 'snprintf' to safely format 'a' as a string with 6 decimal places.
+    // 'sizeof(a_str)' ensures that the output is truncated if it exceeds the size of 'a_str'.
+
+    snprintf(b_str, sizeof(b_str), "%.6f", b);
+    // Use 'snprintf' to safely format 'b' as a string with 6 decimal places.
+    // 'sizeof(b_str)' ensures that the output is truncated if it exceeds the size of 'b_str'.
+
+    snprintf(c_str, sizeof(c_str), "%.6f", c);
+    // Use 'snprintf' to safely format 'c' as a string with 6 decimal places.
+    // 'sizeof(c_str)' ensures that the output is truncated if it exceeds the size of 'c_str'.
+
+    printf("Float a: %s\n", a_str);
+    printf("Float b: %s\n", b_str);
+    printf("Float c: %s\n", c_str);
+
+    return 0;  // End of the program
+}

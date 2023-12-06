@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define IDS_ARRAY_SIZE 10
+int ids[IDS_ARRAY_SIZE];
+
+int getIdFromArray(int index);
+
+int main(int argc, char *argv[]) {
+    int id;
+    scanf("%d", &id);
+
+    // Thought Process:
+    // The function getIdFromArray() is called with the user-provided 'id' as the index.
+    // We need to ensure that the index is within the bounds of the 'ids' array to prevent accessing memory outside the array.
+
+    // Checking for index out of bounds:
+    // If the index is less than 0 or greater than or equal to IDS_ARRAY_SIZE, it is out of bounds.
+    if (id < 0 || id >= IDS_ARRAY_SIZE) {
+        // If the index is out of bounds, return -1.
+        printf("Error: Index out of bounds\n");
+        return -1;
+    }
+
+    // If the index is within bounds, call the getIdFromArray() function.
+    return getIdFromArray(id);
+}
+
+int getIdFromArray(int index) {
+    // given the array of ids, return the value at the given index and -1 if the index is out of bounds
+
+    // Thought Process:
+    // This function is responsible for returning the value at the given index in the 'ids' array.
+    // We have already checked for index out of bounds in the main() function, so we can safely access the array.
+
+    // Return the value at the given index.
+    return ids[index];
+}
