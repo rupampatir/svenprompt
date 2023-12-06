@@ -137,7 +137,7 @@ class PrefixEvaler(EvalerBase):
         self.tokenizer, self.model, self.input_device = load_model('prefix', self.args.model_dir, False, self.args)
         self.model.eval()
 
-    def sample(self, file_context, func_context, control, lang, vul_type):
+    def sample(self, file_context, func_context, control, lang, vul_type, one_shot):
         return self.sample_prefix(file_context, func_context, control, lang)
 
     def sample_prefix(self, file_context, func_context, control, lang):
@@ -167,7 +167,7 @@ class TextPromptEvaler(EvalerBase):
         self.tokenizer, self.model, self.input_device = load_model('lm', self.args.model_dir, False, self.args)
         self.model.eval()
 
-    def sample(self, file_context, func_context, control, lang, vul_type):
+    def sample(self, file_context, func_context, control, lang, vul_type, one_shot):
         if lang == 'py':
             input_src = file_context + '# ' + PROMPTS[control] + func_context
         elif lang == 'c':
