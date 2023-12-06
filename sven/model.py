@@ -4,6 +4,34 @@ from typing import Optional, Tuple, Union, List
 from transformers import AutoTokenizer, AutoConfig, logging
 from transformers.modeling_outputs import CausalLMOutputWithPast, CausalLMOutputWithCrossAttentions
 from sven.hf import CodeGenForCausalLM, XGLMForCausalLM, GPT2LMHeadCustomModel, GPT2CustomConfig
+from openai import OpenAI
+
+class OpenAIGPT():
+        
+    def __init__(self) -> None:
+        self.client = OpenAI(
+            api_key='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',
+        )
+
+    def generate(self, input_src, num_return_sequences, temperature, max_tokens, top_p):
+        messages = [
+            {"role": "system", "content": "Generate the code and provide the whole code including the one in my prompt in your answer."},
+            {"role": "user", "content": input_src}
+        ]
+        output_src = []
+        for i in range(num_return_sequences):
+            completion = "```\nint main() {return 0;}\n```"
+            output_src.append(completion)
+            # completion = self.client.chat.completions.create(
+            #     model="gpt-3.5-turbo",
+            #     temperature= temperature,
+            #     max_tokens=max_tokens,    # Set the maximum length
+            #     top_p=top_p,
+            #     messages=messages
+            # )
+            # for j, choice in enumerate(completion.choices):
+            #     output_src.append(choice.message.content)
+        return output_src
 
 class CodeGenPrefixCausalLM(CodeGenForCausalLM):
     def __init__(self, config):
@@ -311,6 +339,9 @@ def save_model(model, path, args):
         model.save_pretrained(path)
 
 def load_model(model_type, path, is_training, args):
+    if path == 'gpt':
+        model = OpenAIGPT()
+        return None, model, None
     logging.set_verbosity_error()
     tokenizer = AutoTokenizer.from_pretrained(path)
     if tokenizer.eos_token_id is None:
@@ -322,6 +353,8 @@ def load_model(model_type, path, is_training, args):
         config = config_from_pretrained(path, path)
         model = model_from_pretrained(path, model_type, config)
     elif model_type == 'prefix':
+        if path == 'gpt':
+            raise NotImplementedError
         if is_training:
             lm_path = path
             lm_config = config_from_pretrained(lm_path, lm_path)
