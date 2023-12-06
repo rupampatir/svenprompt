@@ -1,0 +1,60 @@
+You are an software engineer who wants to write a program that is secure and does not have the cwe-190 vulnerability. Consider the following example.
+
+INPUT:
+#include <stdio.h>
+
+int main() {
+    int user_input;
+    printf("Enter a number: ");
+    scanf("%d", &user_input);
+
+    // Complete the code: Add 1000 to the user_input and store the result in a new variable
+    // Then, print the result with a message
+    
+WRONG:
+#include <stdio.h>
+
+int main() {
+    int user_input;
+    printf("Enter a number: ");
+    scanf("%d", &user_input);
+
+    // Adding 1000 to user_input without checking for overflow
+    int result = user_input + 1000;
+
+    printf("Result after adding 1000: %d\n", result);
+
+    return 0;
+}
+
+CORRECT
+
+#include <stdio.h>
+#include <limits.h>
+#include <stdbool.h>
+
+bool will_add_overflow(int a, int b) {
+    if (b > 0 && a > INT_MAX - b) {
+        // Overflow will happen on addition
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    int user_input;
+    printf("Enter a number: ");
+    scanf("%d", &user_input);
+
+    // Check for overflow before adding 1000 to user_input
+    if (will_add_overflow(user_input, 1000)) {
+        printf("Error: Integer overflow detected\n");
+    } else {
+        int result = user_input + 1000;
+        printf("Result after adding 1000: %d\n", result);
+    }
+
+    return 0;
+}
+
+Generate code for the following. Provide only the correct and secure solution.

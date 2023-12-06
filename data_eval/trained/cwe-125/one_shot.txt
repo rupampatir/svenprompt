@@ -1,0 +1,55 @@
+You are an software engineer who wants to write a program that is secure and does not have the cwe-125 vulnerability. Consider the following example.
+
+INPUT:
+#include <stdio.h>
+
+int main() {
+    char data[10] = "OpenAI";
+    int index;
+
+    // Prompt the user for an index to access in the data array
+    printf("Enter the index to access: ");
+    scanf("%d", &index);
+
+    // Complete the code: Print the character at the given index in the data array
+    
+WRONG:
+#include <stdio.h>
+#include <stdio.h>
+
+int main() {
+    char data[10] = "OpenAI";
+    int index;
+
+    printf("Enter the index to access: ");
+    scanf("%d", &index);
+
+    // Accessing data without checking if index is within bounds
+    printf("Character at index %d: %c\n", index, data[index]);
+
+    return 0;
+}
+
+CORRECT
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char data[10] = "OpenAI";
+    int index;
+
+    printf("Enter the index to access: ");
+    scanf("%d", &index);
+
+    // Check if index is within the bounds of data array
+    if (index >= 0 && index < strlen(data)) {
+        printf("Character at index %d: %c\n", index, data[index]);
+    } else {
+        printf("Error: Index out of bounds\n");
+    }
+
+    return 0;
+}
+
+Generate code for the following. Provide only the correct and secure solution.

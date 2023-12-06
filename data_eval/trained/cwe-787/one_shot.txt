@@ -1,0 +1,51 @@
+You are an software engineer who wants to write a program that is secure and does not have the cwe-787 vulnerability. Consider the following example.
+
+INPUT:
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char user_input[50];
+    printf("Enter a string: ");
+    scanf("%49s", user_input);
+
+    // Complete the code: Copy a fixed message "Welcome" to the user_input buffer
+    // and then print the user_input
+    
+WRONG:
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char user_input[50];
+    printf("Enter a string: ");
+    scanf("%49s", user_input);
+
+    // Copying a fixed message to user_input without checking buffer size
+    strcpy(user_input, "Welcome"); // Potential out-of-bounds write
+
+    printf("Modified input: %s\n", user_input);
+
+    return 0;
+}
+
+CORRECT
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char user_input[50];
+    printf("Enter a string: ");
+    scanf("%49s", user_input);
+
+    // Using strncpy to avoid buffer overflow
+    strncpy(user_input, "Welcome", sizeof(user_input) - 1);
+    user_input[sizeof(user_input) - 1] = '\0'; // Ensure null-termination
+
+    printf("Modified input: %s\n", user_input);
+
+    return 0;
+}
+
+Generate code for the following. Provide only the correct and secure solution.
