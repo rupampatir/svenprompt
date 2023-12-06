@@ -1,4 +1,5 @@
-Consider the following examples that generate secure code then complete the code below.
+Consider the following examples that generate secure code then complete the code below. Elaborate your thought process when writing code.
+Write comments whenever you detect a possible vulnerability and how you fix it.
 INPUT:
 #include <stdio.h>
 
