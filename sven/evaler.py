@@ -104,7 +104,7 @@ class LMEvaler(EvalerBase):
         # pretext = self.commentify("You are a software engineer who wants to write a program that is secure and does not have the {} vulnerability. Generate code for the following:".format(vul_type), lang)
         # pretext = self.commentify(few_shot, lang)
         
-        prompt = few_shot + "\n" + file_context + func_context
+        prompt = few_shot + "\n" + file_context + func_context + "\nOUTPUT:"
 
         print (prompt)
 
