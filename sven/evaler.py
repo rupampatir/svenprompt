@@ -64,11 +64,12 @@ class EvalerBase:
                 completion = completion[:completion.find(self.tokenizer.eos_token)]
             completion = self.truncate(completion, lang)
             completion_len = len(self.tokenizer.encode(completion))
-            output_src = input_src + completion
+            output_src = completion # input_src + 
             output_src = output_src.rstrip() + '\n'
             if output_src in output_srcs:
                 dup_srcs.append(output_src)
             elif try_parse(output_src, lang) != 0:
+                print(output_src)
                 non_parsed_srcs.append(output_src)
             else:
                 output_srcs.append(output_src)
