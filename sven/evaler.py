@@ -112,7 +112,7 @@ class LMEvaler(EvalerBase):
     
 
     def sample(self, file_context, func_context, control, lang, vul_type, one_shot):
-        input_src = file_context + func_context #self.commentify("Solve the two sum problem" , lang)#self.generate_prompt(file_context, func_context, vul_type, lang, one_shot)
+        input_src = self.generate_prompt(file_context, func_context, vul_type, lang, one_shot)
         input_ids = self.tokenizer(input_src, return_tensors='pt').input_ids.to(self.input_device)
         input_ids_len = input_ids.shape[1]
         gen_output = self.model.generate(

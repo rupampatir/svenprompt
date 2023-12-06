@@ -158,7 +158,7 @@ def eval_single(args, evaler, controls, output_dir, data_dir, vul_type, scenario
         file_context = f.read()
     with open(os.path.join(s_in_dir, 'func_context.'+info['language'])) as f:
         func_context = f.read()
-    with open(os.path.join(data_dir, 'one_shot.txt')) as f:
+    with open(os.path.join(data_dir, 'cot_shot.txt')) as f:
         few_shot = f.read()
     # with open(os.path.join(data_dir, 'two_shot.txt')) as f:
     #     few_shot = f.read()
