@@ -1,0 +1,3 @@
+"Check for CWE-190 in mitre-eg-4","","warning","cwe-190 detected in: 06 at line12","/06.c","12","9","12","35"
+"Check for CWE-190 in mitre-eg-4","","warning","cwe-190 detected in: 09 at line23","/09.c","23","23","23","57"
+"Check for CWE-190 in mitre-eg-4","","warning","cwe-190 detected in: 09 at line23","/09.c","23","23","23","74"

@@ -1,5 +1,7 @@
 codeql
-experiments*/
+orig_codeql_db
+vul_codeql_db
+sec_codeql_db
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
