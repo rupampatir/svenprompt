@@ -119,7 +119,7 @@ class EvalerBase:
             output_src = output_src.rstrip() + '\n'
             print(output_src)
             if output_src in output_srcs:
-                dup_srcs.append(output_src)
+                dup_srcs.append(out put_src)
             elif try_parse(output_src, lang) != 0:
                 non_parsed_srcs.append(output_src)
             else:
@@ -134,10 +134,7 @@ class LMEvaler(EvalerBase):
 
     def load_model(self):
         self.tokenizer, self.model, self.input_device = load_model('lm', self.args.model_dir, False, self.args)
-        try:
-            self.model.eval()
-        except:
-            pass
+        self.model.eval()
 
     def commentify(self, input_string, lang):
         # Split the input string into lines
