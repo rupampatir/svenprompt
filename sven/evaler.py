@@ -111,6 +111,7 @@ class EvalerBase:
         output_srcs, output_ids = [], []
         dup_srcs, non_parsed_srcs = [], []
         for i, completion in enumerate(completions):
+            print(completion)
             if self.tokenizer.eos_token in completion:
                 completion = completion[:completion.find(self.tokenizer.eos_token)]
             completion = self.truncate(completion, lang)
@@ -119,7 +120,7 @@ class EvalerBase:
             output_src = output_src.rstrip() + '\n'
             print(output_src)
             if output_src in output_srcs:
-                dup_srcs.append(out put_src)
+                dup_srcs.append(output_src)
             elif try_parse(output_src, lang) != 0:
                 non_parsed_srcs.append(output_src)
             else:
