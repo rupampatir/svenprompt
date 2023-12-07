@@ -10,27 +10,25 @@ class OpenAIGPT():
         
     def __init__(self) -> None:
         self.client = OpenAI(
-            api_key='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',
+            api_key='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',
         )
 
     def generate(self, input_src, num_return_sequences, temperature, max_tokens, top_p):
         messages = [
-            {"role": "system", "content": "Generate the code and provide the whole code including the one in my prompt in your answer."},
+            {"role": "system", "content": "You are a software developer who is focusing on generating code that is not only functionally correct but also secure. Consider the following examples of an input code prompt and the corresponding completed code as output. The output contains code that prevent vulnerabilities and elaborates on the thought process when writing secure code. Complete the code at the end of the prompt. Just as the example above, explain your thought process and be elaborate in writing comments whenever you detect a possible vulnerability and how you prevent it."},
             {"role": "user", "content": input_src}
         ]
         output_src = []
         for i in range(num_return_sequences):
-            completion = "```\nint main() {return 0;}\n```"
-            output_src.append(completion)
-            # completion = self.client.chat.completions.create(
-            #     model="gpt-3.5-turbo",
-            #     temperature= temperature,
-            #     max_tokens=max_tokens,    # Set the maximum length
-            #     top_p=top_p,
-            #     messages=messages
-            # )
-            # for j, choice in enumerate(completion.choices):
-            #     output_src.append(choice.message.content)
+            completion = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                temperature= temperature,
+                # max_tokens=max_tokens,    # Set the maximum length
+                top_p=top_p,
+                messages=messages
+            )
+            for j, choice in enumerate(completion.choices):
+                output_src.append(choice.message.content)
         return output_src
 
 class CodeGenPrefixCausalLM(CodeGenForCausalLM):

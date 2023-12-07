@@ -169,6 +169,9 @@ def eval_single(args, evaler, controls, output_dir, data_dir, vul_type, scenario
 
         out_src_dir = os.path.join(s_out_dir, f'{control}_output')
         os.makedirs(out_src_dir)
+        if (args.model_dir == 'gpt'):
+            out_raw_src_dir = os.path.join(s_out_dir, f'{control}_output_raw')
+            os.makedirs(out_raw_src_dir)
         output_ids_j = OrderedDict()
         all_fnames = set()
         for i, (output, output_id) in enumerate(zip(outputs, output_ids)):
@@ -177,6 +180,10 @@ def eval_single(args, evaler, controls, output_dir, data_dir, vul_type, scenario
             with open(os.path.join(out_src_dir, fname), 'w') as f:
                 f.write(output)
             output_ids_j[fname] = output_id
+        if (args.model_dir == 'gpt'):
+            for i, output_id in enumerate(output_ids):
+                with open(os.path.join(out_raw_src_dir, f'{str(i).zfill(2)}.txt'), 'w') as f:
+                    f.write(output_id)
         with open(os.path.join(s_out_dir, f'{control}_output_ids.json'), 'w') as f:
             json.dump(output_ids_j, f, indent=2)
         if info['language'] == 'c':

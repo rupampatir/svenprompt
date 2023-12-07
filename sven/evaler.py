@@ -7,6 +7,7 @@ import numpy as np
 from sven.model import CodeGenPrefixCausalLM, load_model
 from sven.constant import PROMPTS
 from sven.utils import try_parse
+import re
 
 class EvalerBase:
     def __init__(self, args):
@@ -53,37 +54,59 @@ class EvalerBase:
 
         return completion
 
+
+    def remove_comments(self, source_code, language):
+        if language == "c":
+            # Remove single-line comments (//)
+            source_code = re.sub(r'//.*', '', source_code)
+            # Remove multi-line comments (/* ... */)
+            source_code = re.sub(r'/\*.*?\*/', '', source_code, flags=re.DOTALL)
+        elif language == "py":
+            # Remove single-line comments (#)
+            source_code = re.sub(r'#.*', '', source_code)
+            # Remove multi-line comments ("""...""" or '''...''')
+            source_code = re.sub(r"('''[\s\S]*?'''|\"\"\"[\s\S]*?\"\"\")", '', source_code, flags=re.DOTALL)
+        source_code = "\n".join([line for line in source_code.split('\n') if line.strip() != ''])
+        return source_code
+
+
     def process_completions_gpt(self, completions, lang):
-        output_srcs, output_ids = [], []
-        dup_srcs, non_parsed_srcs = [], []
+        print("PROCESSING GPT")
+        dup_srcs, non_parsed_srcs, output_srcs = [], [], []
+            
         for completion in completions:
             """ Extract code blocks enclosed in triple backticks. """
-            code_blocks = []
-            lines = completion.split('\n')
-            inside_code_block = False
-            current_block = []
+            if ('```' in completion):
+                code_blocks = []
+                lines = completion.split('\n')
+                inside_code_block = False
+                current_block = []
 
-            for line in lines:
-                if line.startswith('```'):
+                for line in lines:
+                    if line.startswith('```'):
+                        if inside_code_block:
+                            code_blocks.append('\n'.join(current_block))
+                            current_block = []
+                        inside_code_block = not inside_code_block
+                        continue
                     if inside_code_block:
-                        code_blocks.append('\n'.join(current_block))
-                        current_block = []
-                    inside_code_block = not inside_code_block
-                    continue
-                if inside_code_block:
-                    current_block.append(line)
-            output_src = '\n'.join(code_blocks)
+                        current_block.append(line)
+                output_src = self.remove_comments('\n'.join(code_blocks), lang)
+            else:
+                output_src = self.remove_comments(completion, lang)
+        
+            
             if output_src in output_srcs:
                 dup_srcs.append(output_src)
             elif try_parse(output_src, lang) != 0:
                 non_parsed_srcs.append(output_src)
             else:
                 output_srcs.append(output_src)
-                output_ids.append(output_src)
-                
-        return output_srcs, output_ids, dup_srcs, non_parsed_srcs
+        return output_srcs, completions, dup_srcs, non_parsed_srcs
     
     def process_completions(self, input_src, input_ids_len, gen_output, lang):
+        print("PROCESSING NORMAL")
+
         tokens = gen_output[:, input_ids_len:, ...]
         completions = self.tokenizer.batch_decode(tokens)
 
