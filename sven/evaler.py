@@ -105,8 +105,6 @@ class EvalerBase:
         return output_srcs, completions, dup_srcs, non_parsed_srcs
     
     def process_completions(self, input_src, input_ids_len, gen_output, lang):
-        print("PROCESSING NORMAL")
-
         tokens = gen_output[:, input_ids_len:, ...]
         completions = self.tokenizer.batch_decode(tokens)
 
@@ -119,10 +117,10 @@ class EvalerBase:
             completion_len = len(self.tokenizer.encode(completion))
             output_src = completion # input_src + 
             output_src = output_src.rstrip() + '\n'
+            print(output_src)
             if output_src in output_srcs:
                 dup_srcs.append(output_src)
             elif try_parse(output_src, lang) != 0:
-                print(output_src)
                 non_parsed_srcs.append(output_src)
             else:
                 output_srcs.append(output_src)
