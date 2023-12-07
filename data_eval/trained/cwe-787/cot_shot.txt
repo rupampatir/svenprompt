@@ -1,4 +1,3 @@
-Consider the following examples that generate secure code then complete the code below.
 INPUT:
 #include <stdio.h>
 #include <string.h>
@@ -11,20 +10,39 @@ int main() {
 
 OUTPUT:
 #include <stdio.h>
-#include <string.h>
+#include <string.h>  // Include the string.h header for string functions
 
 int main() {
-    char destination[20];
-    char source[] = "HelloWorld";
+    char destination[20];  // Declare a character array 'destination' of size 20
+    char source[] = "HelloWorld";  // Declare and initialize a source string
 
     // Thought Process:
-    // To prevent buffer overflow (CWE-787), ensure 'destination' is large enough.
-    // Use strncpy to copy and ensure null termination.
-    strncpy(destination, source, sizeof(destination) - 1);
-    destination[sizeof(destination) - 1] = '\0';
-    printf("Copied string: %s\n", destination);
+    // We need to safely copy the string from 'source' to 'destination'.
+    // A key concern is to prevent buffer overflow, which can occur when data is written
+    // beyond the bounds of allocated memory. This can lead to crashes, data corruption,
+    // or security vulnerabilities.
 
-    return 0;
+    // To mitigate this risk, we'll use the 'strncpy' function. It's safer than 'strcpy'
+    // because it allows us to specify the maximum number of characters to copy, thus 
+    // preventing writing beyond the 'destination' buffer size.
+
+    // However, 'strncpy' does not guarantee null termination of the string if the 
+    // source string is longer than the specified length. Therefore, we need to manually
+    // ensure the destination string is null-terminated.
+
+    strncpy(destination, source, sizeof(destination) - 1);
+    // Copy characters from 'source' to 'destination'.
+    // The number of characters copied is one less than the size of 'destination'
+    // to leave space for the null terminator.
+
+    destination[sizeof(destination) - 1] = '\0';
+    // Explicitly set the last character of 'destination' to the null terminator.
+    // This ensures that no matter what, 'destination' will be a valid null-terminated string.
+
+    printf("Copied string: %s\n", destination);
+    // Print the copied string. It's now safely copied and terminated.
+
+    return 0;  // End of the program
 }
 INPUT:
 #include <stdio.h>
@@ -37,26 +55,40 @@ int main() {
     // Prompt for user input in user_data and append additional_info
 OUTPUT:
 #include <stdio.h>
-#include <string.h>
+#include <string.h>  // Include the string.h header for string manipulation functions
 
 int main() {
-    char user_data[50];
-    char additional_info[] = " - Validated";
+    char user_data[50];  // Declare a character array 'user_data' of size 50
+    char additional_info[] = " - Validated";  // Declare and initialize an additional info string
 
+    // Prompt the user to input some data
     printf("Enter user data: ");
+    // Read the user input into 'user_data'. The '%49s' format specifier ensures that 
+    // only up to 49 characters are read, leaving space for the null terminator.
     scanf("%49s", user_data);
 
     // Thought Process:
-    // To prevent out-of-bounds write (CWE-787), check the buffer size.
-    // Ensure there's enough space in user_data for additional_info.
+    // We want to append 'additional_info' to 'user_data' safely.
+    // A primary concern is buffer overflow, which occurs when data is written outside
+    // the bounds of the allocated memory, potentially leading to crashes or security issues.
+
+    // First, we need to calculate how much space is left in 'user_data' for appending.
+    // 'sizeof(user_data)' gives the total size of the 'user_data' array.
+    // 'strlen(user_data)' gives the length of the current string in 'user_data', excluding the null terminator.
+    // Subtracting these two values and an extra 1 for the null terminator gives us the available space.
     size_t available_space = sizeof(user_data) - strlen(user_data) - 1;
+
+    // We then check if there is enough available space to append 'additional_info'.
     if (available_space >= strlen(additional_info)) {
+        // If there is enough space, use 'strncat' to concatenate 'additional_info' to 'user_data'.
+        // 'available_space' is used as the maximum number of characters to append to ensure no overflow.
         strncat(user_data, additional_info, available_space);
         printf("Updated data: %s\n", user_data);
     } else {
+        // If there isn't enough space, output an error message.
         printf("Error: Not enough space to append additional info\n");
     }
 
-    return 0;
+    return 0;  // End of the program
 }
 INPUT:

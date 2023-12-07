@@ -1,0 +1,121 @@
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    char *buffer = malloc(100 * sizeof(char));
+    if (!buffer) {
+        return 1; // Allocation failed
+    }
+
+    // Copy a sample text into buffer
+    strcpy(buffer, "Hello, World!");
+
+    // Print the buffer, free it
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    char *buffer = malloc(100 * sizeof(char));
+    if (!buffer) {
+        perror("Failed to allocate memory");
+        return 1;
+    }
+
+    strcpy(buffer, "Hello, World!");
+    printf("Buffer content: %s\n", buffer);
+
+    // Thought Process:
+    // It's important to free dynamically allocated memory to avoid memory leaks.
+    // However, accessing memory after it has been freed can lead to undefined behavior and security vulnerabilities.
+    // This is known as a 'use-after-free' vulnerability.
+
+    // Secure Implementation:
+    // Free the allocated memory
+    free(buffer);
+    
+    // Set the pointer to NULL after freeing.
+    // This helps in preventing accidental use of the freed memory.
+    // A NULL pointer is easier to check and ensures that any attempt to access it will be flagged.
+    buffer = NULL;
+
+    // Check if the pointer is NULL before using it.
+    // This is a good practice to avoid use-after-free vulnerabilities.
+    if (buffer != NULL) {
+        printf("Buffer content after free: %s\n", buffer);
+    } else {
+        printf("Buffer has been freed. Access is unsafe and therefore prevented.\n");
+    }
+
+    return 0;
+}
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+
+void append_data(char *data, const char *additional_data) {
+    strcat(data, additional_data); // Append additional data to the original data
+}
+
+int main() {
+    char *data = malloc(50 * sizeof(char));
+    if (!data) {
+        return 1; // Allocation failed
+    }
+
+    strcpy(data, "Data: ");
+
+    // Append more data to 'data', free it
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void append_data(char *data, const char *additional_data) {
+    // Ensure that neither 'data' nor 'additional_data' is NULL before using strcat.
+    // This check is crucial to avoid undefined behavior, such as dereferencing NULL pointers.
+    if (data != NULL && additional_data != NULL) {
+        strcat(data, additional_data);
+    }
+}
+
+int main() {
+    char *data = malloc(50 * sizeof(char));
+    if (!data) {
+        perror("Failed to allocate memory");
+        return 1;
+    }
+
+    strcpy(data, "Data: ");
+    append_data(data, "Sample");
+
+    printf("Final Data: %s\n", data);
+
+    // Thought Process:
+    // After using dynamically allocated memory, it should be freed to prevent memory leaks.
+    // However, once freed, any further access to this memory is unsafe and can lead to use-after-free vulnerabilities.
+    // This can cause unpredictable behavior and potentially expose security risks.
+
+    // Secure Implementation:
+    // Free the memory after its use is complete.
+    free(data);
+
+    // Immediately set the pointer to NULL to prevent any accidental use.
+    // This is a defensive programming practice to prevent use-after-free issues.
+    data = NULL;
+
+    // Before using 'data' again, always check if it is NULL.
+    // This practice ensures that we don't accidentally use memory that has already been freed.
+    append_data(data, "More Data");
+    if (data != NULL) {
+        printf("Data after free: %s\n", data);
+    } else {
+        printf("Data has been freed. Any further use is unsafe and has been avoided.\n");
+    }
+
+    return 0;
+}
+INPUT:

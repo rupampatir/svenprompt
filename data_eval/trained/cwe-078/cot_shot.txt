@@ -1,0 +1,83 @@
+INPUT:
+import os
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/run-command', methods=['GET'])
+def run_command():
+    command = request.args.get('command')
+OUTPUT:
+import subprocess
+from flask import Flask, request
+
+app = Flask(__name__)  # Create an instance of the Flask web application
+
+@app.route('/run-command', methods=['GET'])  # Define a route to execute commands
+def run_command():
+    command = request.args.get('command')  # Retrieve the 'command' parameter from the GET request
+
+    # Thought Process:
+    # Allowing users to execute arbitrary commands on the server poses a huge security risk.
+    # An attacker could exploit this by injecting malicious commands, leading to unauthorized access or data breaches.
+    # The use of 'subprocess.check_output' with 'shell=False' is a measure to reduce risks,
+    # as it doesn't invoke the shell directly. However, it is still not completely safe.
+
+    # Security Considerations:
+    # 1. Validate Input: It's crucial to validate and sanitize the input 'command' to ensure it's not malicious.
+    # 2. Restrict Functionality: Consider if such functionality is necessary and, if so, restrict it to a safe set of commands.
+    # 3. Avoid Exposure: Exposing command execution through a web interface is inherently dangerous and should generally be avoided.
+
+    # Secure Execution (with caution):
+    # The following line executes the command without using a shell, which is safer than allowing shell=True.
+    # However, this does not fully mitigate the risk of command injection.
+    try:
+        output = subprocess.check_output(command, shell=False)
+        return output
+    except Exception as e:
+        return str(e)
+
+if __name__ == '__main__':
+    app.run()  # Run the Flask application
+INPUT:
+import os
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/list-directory')
+def list_directory():
+    directory = request.args.get('dir')
+OUTPUT:
+import subprocess
+from flask import Flask, request
+
+app = Flask(__name__)  # Create an instance of the Flask web application
+
+@app.route('/list-directory')  # Define a route to list the contents of a directory
+def list_directory():
+    directory = request.args.get('dir')  # Retrieve the 'dir' parameter from the GET request
+
+    # Thought Process:
+    # We aim to list the contents of a directory specified by the user.
+    # However, directly using user input in command execution poses a risk of command injection.
+    # To mitigate this, we use subprocess with a list of arguments.
+
+    # Security Considerations:
+    # 1. Validate Input: Ensure the 'directory' parameter is a valid path and does not contain malicious patterns.
+    # 2. Restrict Functionality: Limit the functionality to only listing directories, without allowing further command execution.
+
+    # Execute 'ls' command securely:
+    # The 'subprocess.check_output' function is used with a list of arguments ['ls', directory],
+    # which prevents the shell from interpreting any part of the input as special characters (like ';', '&&', etc.).
+    # The 'text=True' argument makes sure that the output is returned as a string.
+    try:
+        output = subprocess.check_output(['ls', directory], text=True)
+        return output
+    except subprocess.CalledProcessError as e:
+        # Handle the exception if the subprocess call fails (e.g., directory does not exist)
+        return str(e)
+
+if __name__ == '__main__':
+    app.run()  # Run the Flask application
+INPUT:

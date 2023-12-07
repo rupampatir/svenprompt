@@ -1,0 +1,146 @@
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    char filename[256];
+    FILE *file;
+    // Prompt for the filename
+    // Open and display the contents of the file
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>  // Include unistd.h for access function
+
+int main() {
+    char filename[256];
+    FILE *file;
+
+    // Prompt the user to enter the filename
+    printf("Enter the filename: ");
+    fgets(filename, sizeof(filename), stdin);
+    filename[strcspn(filename, "\n")] = 0;  // Remove newline character
+
+    // Thought Process:
+    // Path traversal vulnerabilities allow attackers to access directories and files stored outside the intended folder.
+    // To prevent this, we need to validate the input file path to ensure it does not contain any traversal sequences like "../".
+
+    // Check if the filename contains traversal sequences
+    if (strstr(filename, "../") != NULL || strstr(filename, "..\\") != NULL) {
+        printf("Error: Path traversal attempt detected\n");
+    } else {
+        // Try to open the file in read mode
+        file = fopen(filename, "r");
+        if (file == NULL) {
+            printf("Error: Unable to open file\n");
+        } else {
+            // Read and display the contents of the file
+            char ch;
+            while ((ch = fgetc(file)) != EOF) {
+                putchar(ch);
+            }
+            fclose(file);  // Close the file
+        }
+    }
+
+    return 0;  // End of the program
+}
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>  // Include unistd.h for read/write operations
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define PORT 8080
+
+int main() {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+    FILE *file;
+
+    // Network socket setup and listening
+    // Accept a client connection
+    // Receive a file name from the client
+    // Open and display the contents of the file
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>  // Include unistd.h for read/write operations
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <limits.h>  // Include limits.h for realpath
+
+#define PORT 8080
+
+int main() {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+    char resolved_path[PATH_MAX];
+    FILE *file;
+
+    // Network socket setup and listening
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+    listen(server_fd, 3);
+
+    printf("Server listening on port %d\n", PORT);
+    new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+
+    // Accept a client connection and receive a file name
+    read(new_socket, buffer, 1024);
+
+    // Thought Process:
+    // Receiving file paths over a network introduces additional security considerations.
+    // We must validate and sanitize the received file path to prevent path traversal attacks.
+
+    // Sanitize and validate the received file path
+    buffer[strcspn(buffer, "\n")] = 0; // Remove newline character if any
+    if (strstr(buffer, "../") != NULL || strstr(buffer, "..\\") != NULL) {
+        // Send an error message to the client
+        char *error_msg = "Error: Path traversal attempt detected\n";
+        write(new_socket, error_msg, strlen(error_msg));
+    } else {
+        // Resolve the absolute path and check if it's within the allowed directory
+        realpath(buffer, resolved_path);
+        if (strncmp(resolved_path, "/allowed/directory/", strlen("/allowed/directory/")) != 0) {
+            char *error_msg = "Error: Access to file outside the allowed directory is not allowed\n";
+            write(new_socket, error_msg, strlen(error_msg));
+        } else {
+            // Open the file and send its contents to the client
+            file = fopen(resolved_path, "r");
+            if (file == NULL) {
+                char *error_msg = "Error: Unable to open file\n";
+                write(new_socket, error_msg, strlen(error_msg));
+            } else {
+                char ch;
+                while ((ch = fgetc(file)) != EOF) {
+                    write(new_socket, &ch, sizeof(char));
+                }
+                fclose(file);  // Close the file
+            }
+        }
+    }
+
+    close(new_socket);
+    close(server_fd);
+    return 0;  // End of the program
+}
+INPUT:

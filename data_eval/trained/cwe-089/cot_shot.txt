@@ -1,0 +1,74 @@
+INPUT:
+import sqlite3
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/user')
+def get_user():
+    username = request.args.get('username')
+    # Retrieve user details from the database using the username
+OUTPUT:
+import sqlite3
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/user')
+def get_user():
+    username = request.args.get('username')
+
+    # Thought Process:
+    # Constructing SQL queries directly using user input can lead to SQL injection.
+    # An attacker could manipulate the query to access or modify unauthorized data.
+
+    # Security Considerations:
+    # - Parameterized Queries: Use parameterized queries to separate SQL code from data inputs.
+    # - Validate Input: Check the input against expected patterns or data types.
+
+    # Secure Implementation:
+    # Using a parameterized query prevents SQL injection by treating the username as a parameter, not part of the SQL code.
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    conn.close()
+    return str(user)
+INPUT:
+import mysql.connector
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/product')
+def get_product():
+    product_id = request.args.get('id')
+    # Fetch product details from the database using the product_id
+OUTPUT:
+import mysql.connector
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/product')
+def get_product():
+    product_id = request.args.get('id')
+
+    # Thought Process:
+    # Directly including user input in SQL statements can lead to SQL injection attacks.
+    # This can allow unauthorized database manipulation or access.
+
+    # Security Considerations:
+    # - Parameterized Queries: Essential for safely incorporating user data in SQL queries.
+    # - Input Validation: Ensuring input matches expected format can further mitigate risks.
+
+    # Secure Implementation:
+    # The use of a parameterized query here ensures the product_id is not executed as part of the SQL code.
+    conn = mysql.connector.connect(user='username', password='password', host='localhost', database='database')
+    cursor = conn.cursor()
+    query = 'SELECT * FROM products WHERE id = %s'
+    cursor.execute(query, (product_id,))
+    product = cursor.fetchone()
+    conn.close()
+    return str(product)
+INPUT:

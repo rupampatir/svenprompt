@@ -1,0 +1,114 @@
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int data;
+} Item;
+
+Item* create_item() {
+    // Allocate memory for an Item and return the pointer
+}
+
+int main() {
+    Item *item = create_item();
+    
+    // Check if 'item' is not NULL, then access 'item->data'
+}
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int data;
+} Item;
+
+Item* create_item() {
+    // Allocate memory for an Item
+    Item *new_item = malloc(sizeof(Item));
+    if (new_item == NULL) {
+        perror("Failed to allocate memory for Item");
+    }
+    return new_item;
+}
+
+int main() {
+    Item *item = create_item();
+
+    // Thought Process:
+    // Before accessing members of a pointer, it is crucial to check if the pointer is NULL.
+    // Dereferencing a NULL pointer will lead to a runtime error and can crash the program.
+    // This is known as NULL Pointer Dereference.
+
+    // Secure Implementation:
+    // Ensure the 'item' pointer is not NULL before accessing it.
+    if (item != NULL) {
+        item->data = 42;  // Safe to access 'item->data'
+        printf("Item data: %d\n", item->data);
+        free(item);
+    } else {
+        printf("Failed to create item, pointer is NULL.\n");
+    }
+
+    return 0;
+}
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+
+void process_data(int *data) {
+    // TODO: Safely print the value pointed to by 'data'
+}
+
+int main() {
+    int *data = (int *)malloc(sizeof(int));
+    *data = 100;
+
+    process_data(data);
+
+    // Cleanup
+    free(data);
+}
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+
+void process_data(int *data) {
+    // Thought Process:
+    // A function receiving a pointer must always consider the possibility of a NULL pointer.
+    // A common vulnerability is the assumption that pointers passed to functions are always valid.
+    // Dereferencing a NULL pointer is a critical error that leads to a runtime crash.
+    // This is a NULL Pointer Dereference and is a common source of bugs and security vulnerabilities.
+
+    // Secure Implementation:
+    // Perform a NULL check before any pointer dereference.
+    // This ensures stability and prevents crashes due to NULL Pointer Dereferences.
+    if (data != NULL) {
+        // If 'data' is valid, it's safe to dereference and use it.
+        printf("Data: %d\n", *data);
+    } else {
+        // Handling the NULL case helps in avoiding runtime crashes
+        // and indicates a potential issue in the way 'process_data' is being used.
+        printf("NULL pointer received, cannot process data.\n");
+    }
+}
+
+int main() {
+    int *data = (int *)malloc(sizeof(int));
+    // Checking if memory allocation was successful
+    if (data == NULL) {
+        // Handling allocation failure is crucial. It prevents further operations on a NULL pointer.
+        perror("Failed to allocate memory");
+        return 1;
+    }
+
+    *data = 100;
+    process_data(data);
+
+    // Cleanup
+    // Freeing the allocated memory is important to avoid memory leaks.
+    free(data);
+
+    return 0;
+}
+INPUT:

@@ -1,0 +1,63 @@
+INPUT:
+from flask import Flask, render_template_string, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    user_input = request.args.get('user_data')
+    # Return a greeting message incorporating the user_input
+OUTPUT:
+from flask import Flask, render_template_string, request, escape
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    user_input = request.args.get('user_data')
+
+    # Thought Process:
+    # The objective is to return a greeting message that includes the user's input.
+    # However, directly rendering user input can lead to XSS vulnerabilities.
+
+    # Security Considerations:
+    # - Sanitize Input: To prevent script injection, special HTML characters in user input should be encoded.
+    # - Content Security Policy: Implementing CSP can further secure the web page against XSS.
+    # - Validate Input: Check if the user input conforms to expected patterns or data types.
+
+    # Secure Implementation:
+    # The 'escape' function sanitizes the user input, making it safe for rendering in HTML.
+    escaped_user_input = escape(user_input)
+    return render_template_string('<div>Hello, ' + escaped_user_input + '!</div>')
+INPUT:
+from flask import Flask, render_template_string, request
+
+app = Flask(__name__)
+
+@app.route('/feedback')
+def feedback():
+    feedback_message = request.args.get('message')
+    # Display the feedback message on a web page
+OUTPUT:
+from flask import Flask, render_template_string, request, escape
+
+app = Flask(__name__)
+
+@app.route('/feedback')
+def feedback():
+    feedback_message = request.args.get('message')
+
+    # Thought Process:
+    # Need to display user-provided feedback on the web page.
+    # However, unfiltered user input can lead to XSS, allowing script injection.
+
+    # Security Considerations:
+    # - Sanitize Input: Encoding special characters in user input is crucial to prevent XSS.
+    # - Content Security Policy: Implementing CSP adds an additional layer of security.
+    # - Validate Input: Ensure that the feedback message adheres to expected formats or character sets.
+
+    # Secure Implementation:
+    # The 'escape' function is used here to safely encode user-provided feedback.
+    escaped_feedback_message = escape(feedback_message)
+    return render_template_string('<p>Feedback: ' + escaped_feedback_message + '</p>')
+INPUT:

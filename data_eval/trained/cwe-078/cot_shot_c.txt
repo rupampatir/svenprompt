@@ -1,0 +1,125 @@
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    char user_input[256];
+    char command[512];
+
+    // Get a search term from the user to find files
+    // Construct a command to search files using 'grep' command in the syste
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    char user_input[256];
+    char command[512];
+
+    // Prompt the user to enter a search term
+    printf("Enter a search term: ");
+    fgets(user_input, sizeof(user_input), stdin);
+    user_input[strcspn(user_input, "\n")] = 0;  // Remove newline character
+
+    // Thought Process:
+    // Directly including user input in a system command can lead to command injection.
+    // To mitigate this, we escape or neutralize special characters that could be interpreted by the shell.
+
+    // Neutralize special characters in the user input
+    char *special_chars = ";&|`$<>^*[]{}?\"'\\";
+    for (char *p = user_input; *p; p++) {
+        if (strchr(special_chars, *p)) {
+            *p = '_';  // Replace the special character with an underscore
+        }
+    }
+
+    // Construct a safer command
+    snprintf(command, sizeof(command), "grep -i '%s' /path/to/search/", user_input);
+
+    // Execute the command
+    system(command);
+
+    return 0;
+}
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define PORT 8080
+
+int main() {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+    char command[1024];
+
+    // Network socket setup and listening
+    // Accept a client connection
+    // Receive a command argument from the client to run a system command
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define PORT 8080
+
+int main() {
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+    char command[1024];
+
+    // Network socket setup and listening
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+    listen(server_fd, 3);
+
+    printf("Server listening on port %d\n", PORT);
+    new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+
+    // Receive a command argument from the client
+    read(new_socket, buffer, 1024);
+
+    // Thought Process:
+    // Accepting command arguments over the network and using them in system commands can be extremely risky.
+    // We must validate and sanitize the input to prevent OS command injection.
+
+    // Sanitize the received input
+    char *special_chars = ";&|`$<>^*[]{}?\"'\\";
+    for (char *p = buffer; *p; p++) {
+        if (strchr(special_chars, *p)) {
+            *p = '_';  // Replace the special character with an underscore
+        }
+    }
+
+    // Construct a safer command
+    snprintf(command, sizeof(command), "echo '%s'", buffer);
+
+    // Execute the command
+    system(command);
+
+    close(new_socket);
+    close(server_fd);
+    return 0;
+}
+INPUT:

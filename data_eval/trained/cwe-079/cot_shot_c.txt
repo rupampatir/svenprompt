@@ -1,0 +1,116 @@
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    char user_input[256];
+    char html_content[1024];
+
+    // Get a comment from the user
+    // Generate an HTML page displaying the comment
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void escape_html(char *output, const char *input, int max_output_length) {
+    const char *hex_chars = "0123456789ABCDEF";
+    int output_index = 0;
+
+    for (int i = 0; input[i] && output_index < max_output_length - 1; ++i) {
+        char c = input[i];
+        if (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9')) {
+            output[output_index++] = c;
+        } else {
+            output[output_index++] = '%';
+            output[output_index++] = hex_chars[(c >> 4) & 0xF];
+            output[output_index++] = hex_chars[c & 0xF];
+        }
+    }
+
+    output[output_index] = '\0';
+}
+
+int main() {
+    char user_input[256];
+    char html_content[1024];
+    char escaped_input[768];  // Enough space for escaping
+
+    // Prompt the user to enter a comment
+    printf("Enter your comment: ");
+    fgets(user_input, sizeof(user_input), stdin);
+    user_input[strcspn(user_input, "\n")] = 0;  // Remove newline character
+
+    // Escape HTML special characters in the user input
+    escape_html(escaped_input, user_input, sizeof(escaped_input));
+
+    // Generate an HTML page with the escaped comment
+    snprintf(html_content, sizeof(html_content),
+             "<html><body><p>User comment: %s</p></body></html>",
+             escaped_input);
+
+    printf("%s", html_content);  // Output the HTML content
+
+    return 0;
+}
+INPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    char username[256];
+    char profile_info[1024];
+
+    // Get the username and profile information from the user
+    // Generate a user profile page with this information
+OUTPUT:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void escape_html(char *output, const char *input, int max_output_length) {
+    const char *hex_chars = "0123456789ABCDEF";
+    int output_index = 0;
+
+    for (int i = 0; input[i] && output_index < max_output_length - 1; ++i) {
+        char c = input[i];
+        if (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9')) {
+            output[output_index++] = c;
+        } else {
+            output[output_index++] = '%';
+            output[output_index++] = hex_chars[(c >> 4) & 0xF];
+            output[output_index++] = hex_chars[c & 0xF];
+        }
+    }
+
+    output[output_index] = '\0';
+}
+
+int main() {
+    char username[256];
+    char profile_info[1024];
+    char escaped_username[768];
+    char escaped_profile_info[3072];  // Triple space for escaping
+
+    // Prompt the user to enter their username and profile information
+    printf("Enter your username: ");
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\n")] = 0;  // Remove newline character
+
+    printf("Enter your profile information: ");
+    fgets(profile_info, sizeof(profile_info), stdin);
+    profile_info[strcspn(profile_info, "\n")] = 0;  // Remove newline character
+
+    // Escape HTML special characters in username and profile information
+    escape_html(escaped_username, username, sizeof(escaped_username));
+    escape_html(escaped_profile_info, profile_info, sizeof(escaped_profile_info));
+
+    // Generate a user profile page with the escaped information
+    printf("<html><body><h1>%s's Profile</h1><p>%s</p></body></html>",
+           escaped_username, escaped_profile_info);
+
+    return 0;
+}
+INPUT:

@@ -1,0 +1,78 @@
+INPUT:
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/get-file', methods=['GET'])
+def get_file():
+    file_path = request.args.get('file_path')
+    # Open and return the contents of the file
+OUTPUT:
+from flask import Flask, request, send_from_directory, safe_join, abort
+
+app = Flask(__name__)  # Create an instance of the Flask class
+
+@app.route('/get-file', methods=['GET'])  # Define a route for HTTP GET requests to '/get-file'
+def get_file():
+    file_path = request.args.get('file_path')  # Retrieve the 'file_path' argument from the GET request
+
+    # Thought Process:
+    # We need to safely serve a file located at 'file_path'.
+    # However, we must ensure that this operation does not expose files outside of a designated safe directory.
+    # This is to prevent a path traversal attack, where an attacker could manipulate 'file_path' to access unauthorized files.
+
+    # To mitigate this risk, we use the 'safe_join' function.
+    # 'safe_join' will combine '/safe/directory/' with 'file_path' in a way that prevents path traversal.
+    # If 'file_path' contains any traversal components like '../', 'safe_join' will raise a ValueError.
+    try:
+        safe_path = safe_join('/safe/directory/', file_path)  # Safely join the base directory with the file path
+    except ValueError:
+        abort(404)  # If the path is unsafe, return a 404 Not Found error
+
+    # Send the file from the safe directory.
+    # The 'as_attachment' parameter ensures the file is sent for download rather than displayed in the browser.
+    return send_from_directory('/safe/directory/', safe_path, as_attachment=True)
+
+if __name__ == '__main__':
+    app.run()  # Run the Flask application
+INPUT:
+import os
+from flask import Flask, send_file
+
+app = Flask(__name__)
+
+@app.route('/download')
+def download():
+    filename = request.args.get('filename')
+    # Send the file to the client
+OUTPUT:
+import os
+from flask import Flask, send_from_directory, request, abort  # Import necessary modules from flask
+
+app = Flask(__name__)  # Create a Flask application instance
+
+@app.route('/download')  # Define a route for downloading files
+def download():
+    filename = request.args.get('filename')  # Retrieve the filename from the request's query parameters
+
+    # Thought Process:
+    # The primary security concern here is to safeguard against path traversal attacks.
+    # In such attacks, an attacker may try to access files outside the intended directory 
+    # by manipulating the 'filename' parameter, using techniques like '../' to navigate directories.
+
+    # To prevent this, we perform a validation check on the 'filename':
+    # 1. Check if '..' is part of the filename. This substring can be used in path traversal to move up directories.
+    # 2. Check if the filename starts with '/'. A leading slash can be used to indicate an absolute path,
+    #    potentially pointing to sensitive areas of the filesystem.
+
+    if '..' in filename or filename.startswith('/'):
+        abort(404)  # If any of these conditions are true, abort the request with a 404 Not Found error
+
+    # If the filename passes the validation checks, proceed to serve the file.
+    # 'os.path.join(app.root_path, 'safe_folder')' safely constructs the path to the 'safe_folder' directory,
+    # ensuring that file access is restricted to this directory only.
+    return send_from_directory(os.path.join(app.root_path, 'safe_folder'), filename)
+
+if __name__ == '__main__':
+    app.run()  # Run the Flask application
+INPUT:

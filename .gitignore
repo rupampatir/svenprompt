@@ -2,6 +2,7 @@ codeql
 orig_codeql_db
 vul_codeql_db
 sec_codeql_db
+experiments
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
